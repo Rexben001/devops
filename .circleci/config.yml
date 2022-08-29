@@ -35,5 +35,5 @@ workflows:
       - deploy-app
       - destroy-app:
         type: approval 
-          requires:
+        requires:
             - deploy-app
