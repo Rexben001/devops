@@ -7,17 +7,17 @@ jobs:
     steps:
       - checkout
       - terraform/init:
-          path: .
+          path: ./terraform/docker
       - terraform/validate:
-          path: .
+          path: ./terraform/docker
       - terraform/fmt:
-          path: .
+          path: ./terraform/docker
       - terraform/plan:
-          path: .
+          path: ./terraform/docker
       - terraform/apply:
-          path: .
+          path: ./terraform/docker
       # - terraform/destroy:
-      #     path: .
+      #     path: ./terraform/docker
     working_directory: ~/src
 workflows:
   single-job-lifecycle:
