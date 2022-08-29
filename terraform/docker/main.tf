@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "my_first_task" {
   [
     {
       "name": "my-first-task",
-      "image": "${aws_ecr_repository.my_first_ecr_repo.repository_url}",
+      "image": "573718985267.dkr.ecr.us-east-1.amazonaws.com/backend:latest",
       "essential": true,
       "portMappings": [
         {
