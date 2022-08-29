@@ -10,14 +10,14 @@ jobs:
           path: ./terraform/docker
       - terraform/validate:
           path: ./terraform/docker
+      - hold:
+         type: approval
       - terraform/fmt:
           path: ./terraform/docker
       - terraform/plan:
           path: ./terraform/docker
       - terraform/apply:
           path: ./terraform/docker
-      - hold:
-         type: approval
       - terraform/destroy:
           path: ./terraform/docker
     working_directory: ~/src
