@@ -18,7 +18,7 @@ jobs:
           path: .
       # - terraform/destroy:
       #     path: .
-    working_directory: ~/repo/terraform/docker
+    working_directory: ~/src
 workflows:
   single-job-lifecycle:
     jobs:
