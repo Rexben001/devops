@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+  namespace: monitoring
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: react-frontend
+        image: rexben/full-stack-test_client
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: CHOKIDAR_USEPOLLING
+          value: "true"
+        - name: REACT_APP_API_ENDPOINT
+          value: http://127.0.0.1:3001
+          # value: http://node-service.service-deployments:3001
+          # value: http://10.104.101.3:3001 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-service
+  labels:
+    app: frontend
+  namespace: monitoring
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+  - port: 3003
+    targetPort: 3000
+    protocol: TCP
+    nodePort: 32100

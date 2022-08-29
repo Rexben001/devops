@@ -1,0 +1,72 @@
+apiVersion: v1
+data:
+  CreateDB.sql: |-
+   CREATE TABLE IF NOT EXISTS books_reviews (
+    id serial PRIMARY KEY,
+    book_name varchar(50) NOT NULL,
+    book_review varchar(50) NOT NULL
+   );
+
+kind: ConfigMap
+metadata:
+  name: pg-init-script
+  namespace: monitoring
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+  labels:
+    app: database
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - name: mysql-db
+        image: mysql/mysql-server:8.0.23
+        ports:
+        - containerPort: 3306
+        env:
+          - name: MYSQL_HOST_IP
+            value: mysql_db
+          - name: MYSQL_DATABASE
+            value: books
+          - name: MYSQL_USER
+            value: MYSQL_USER
+          - name: MYSQL_PASSWORD
+            value: MYSQL_PASSWORD
+          - name: MYSQL_ROOT_PASSWORD1
+            value: MYSQL_ROOT_PASSWORD1
+          - name: MYSQL_HOST
+            value: localhost
+        volumeMounts:
+              - name: sqlscript
+                mountPath: /docker-entrypoint-initdb.d   
+      volumes:
+        - name: sqlscript
+          configMap:
+            name: pg-init-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: database
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  selector:
+    app: database
+  ports:
+  - port: 3306
+    protocol: TCP # default 
+    name: sql #

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: node-backend
+        image: rexben/full-stack-test_api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3001
+        env:
+        - name: MYSQL_HOST_IP
+
+          value: $(MYSQL_SERVICE_PORT) #clusterIP of the db service
+        - name: MYSQL_DATABASE
+          value: books
+        - name: MYSQL_USER
+          value: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          value: MYSQL_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-service
+  namespace: monitoring
+  labels:
+    app: backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend
+  ports:
+  - port: 3001
+    targetPort: 3001
+    protocol: TCP
+    nodePort: 31000

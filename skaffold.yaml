@@ -1,0 +1,22 @@
+# for k8s local development
+
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy: 
+  kubectl:
+    manifests:
+      - ./infra/k8s/* #list of files you want skaffold to watch and apply
+
+build:
+  local:
+    push: false # prevent skaffold from pushing changes to DockerHub
+  artifacts: # use the changes inside other pods instead of rebuilding the whole image.
+    - image: ""
+      context: .
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: ""
+  
