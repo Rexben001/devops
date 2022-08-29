@@ -7,15 +7,15 @@ jobs:
     steps:
       - checkout
       - terraform/init:
-          path: ./terraform/docker
+          path: ./terraform/k8s
       - terraform/validate:
-          path: ./terraform/docker
+          path: ./terraform/k8s
       - terraform/fmt:
-          path: ./terraform/docker
+          path: ./terraform/k8s
       - terraform/plan:
-          path: ./terraform/docker
+          path: ./terraform/k8s
       - terraform/apply:
-          path: ./terraform/docker
+          path: ./terraform/k8s
       # - terraform/destroy:
       #     path: ./terraform/docker
     working_directory: ~/src
