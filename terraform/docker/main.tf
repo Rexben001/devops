@@ -16,9 +16,13 @@ provider "aws" {
 #   name = "my-first-ecr-repo" # Naming my repository
 # }
 
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
 
 resource "aws_ecs_cluster" "my_cluster" {
-  name = "my-cluster" # Naming the cluster
+  name = "my-cluster-${random_string.suffix.result}" # Naming the cluster
 }
 
 resource "aws_ecs_task_definition" "my_first_task" {
@@ -48,7 +52,7 @@ resource "aws_ecs_task_definition" "my_first_task" {
 }
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "ecsTaskExecutionRole"
+  name               = "ecsTaskExecutionRole-${random_string.suffix.result}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -86,9 +90,9 @@ resource "aws_default_subnet" "default_subnet_c" {
 }
 
 resource "aws_ecs_service" "my_first_service" {
-  name            = "my-first-service"                        # Naming our first service
-  cluster         = aws_ecs_cluster.my_cluster.id             # Referencing our created Cluster
-  task_definition = aws_ecs_task_definition.my_first_task.arn # Referencing the task our service will spin up
+  name            = "my-first-service-${random_string.suffix.result}" # Naming our first service
+  cluster         = aws_ecs_cluster.my_cluster.id                     # Referencing our created Cluster
+  task_definition = aws_ecs_task_definition.my_first_task.arn         # Referencing the task our service will spin up
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers we want deployed to 3
 
@@ -107,7 +111,7 @@ resource "aws_ecs_service" "my_first_service" {
 
 
 resource "aws_alb" "application_load_balancer" {
-  name               = "test-lb-tf" # Naming our load balancer
+  name               = "test-lb-tf-${random_string.suffix.result}" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [ # Referencing the default subnets
     "${aws_default_subnet.default_subnet_a.id}",
@@ -136,7 +140,7 @@ resource "aws_security_group" "load_balancer_security_group" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "target-group"
+  name        = "target-group-${random_string.suffix.result}"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"

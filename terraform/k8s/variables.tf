@@ -4,7 +4,7 @@ variable "region" {
 }
 
 variable "cluster_name" {
-  default = "getting-started-eks"
+  default = "getting-started-eks-${random_string.suffix.result}"
 }
 
 variable "map_accounts" {

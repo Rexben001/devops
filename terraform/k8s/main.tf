@@ -8,6 +8,8 @@ terraform {
   }
 }
 
+
+
 provider "aws" {
   region = var.region
 }
@@ -23,8 +25,13 @@ data "aws_eks_cluster_auth" "cluster" {
 data "aws_availability_zones" "available" {
 }
 
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
+
 resource "aws_security_group" "worker_group_mgmt_one" {
-  name_prefix = "worker_group_mgmt_one"
+  name_prefix = "worker_group_mgmt_one-${random_string.suffix.result}"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -59,7 +66,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.14.2"
 
-  name                 = "test-vpc"
+  name                 = "test-vpc-${random_string.suffix.result}"
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
@@ -125,7 +132,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-      name = "node-group-1"
+      name = "node-group-1-${random_string.suffix.result}"
 
       instance_types = ["t3.small"]
 
@@ -142,7 +149,7 @@ module "eks" {
     }
 
     two = {
-      name = "node-group-2"
+      name = "node-group-2-${random_string.suffix.result}"
 
       instance_types = ["t3.medium"]
 

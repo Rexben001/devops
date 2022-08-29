@@ -2,7 +2,7 @@ version: '2.1'
 orbs:
   terraform: circleci/terraform@3.1
 jobs:
-  single-job-lifecycle:
+  deploy-app:
     executor: terraform/default
     steps:
       - checkout
@@ -16,10 +16,24 @@ jobs:
           path: ./terraform/k8s
       - terraform/apply:
           path: ./terraform/k8s
+      # - run:
+      #     name: Failure
+      #     command: "failed_notification_step"
+      #     when: on_fail
       # - terraform/destroy:
       #     path: ./terraform/docker
+  destroy-app:
+    executor: terraform/default
+    steps:
+      - checkout
+      - terraform/destroy:
+          path: ./terraform/docker
     working_directory: ~/src
 workflows:
-  single-job-lifecycle:
+  deploy-app:
     jobs:
-      - single-job-lifecycle
+      - deploy-app
+      - destroy-app:
+        type: approval 
+          requires:
+            - deploy-app
