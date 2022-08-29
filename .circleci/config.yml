@@ -16,12 +16,10 @@ jobs:
           path: ./terraform/k8s
       - terraform/apply:
           path: ./terraform/k8s
-      # - run:
-      #     name: Failure
-      #     command: "failed_notification_step"
-      #     when: on_fail
       # - terraform/destroy:
       #     path: ./terraform/docker
+    working_directory: ~/src
+
   destroy-app:
     executor: terraform/default
     steps:
@@ -34,6 +32,6 @@ workflows:
     jobs:
       - deploy-app
       - destroy-app:
-        type: approval 
-        requires:
-            - deploy-app
+          type: approval 
+          requires:
+              - deploy-app
