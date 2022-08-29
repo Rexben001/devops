@@ -10,13 +10,11 @@ jobs:
       aws-secret-access-key: AWS_SECRET_ACCESS_KEY
       create-repo: true
       dockerfile: Dockerfile
-      path: ./server2/
+      path: ./server2
       region: AWS_REGION
       repo: myECRRepository
       tag: latest
       platform: linux/amd64
-
-
   - single-job-lifecycle:
     executor: terraform/default
     steps:
@@ -34,9 +32,11 @@ jobs:
       # - terraform/destroy:
       #     path: ./terraform/docker
     working_directory: ~/src
+
 workflows:
-    jobs:
-      - aws-ecr/build-and-push-image
-      # - single-job-lifecycle:
-      #   requires:
-      #     - aws-ecr/build-and-push-image
+    build_and_push_image:
+      jobs:
+        - aws-ecr/build-and-push-image
+        # - single-job-lifecycle:
+        #   requires:
+        #     - aws-ecr/build-and-push-image
