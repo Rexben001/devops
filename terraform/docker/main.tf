@@ -177,3 +177,8 @@ resource "aws_security_group" "service_security_group" {
     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
   }
 }
+
+output "elb_dns_name" {
+  description = "ELB DNS name"
+  value = resource.aws_alb.application_load_balancer.dns_name
+}

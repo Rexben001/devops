@@ -7,15 +7,15 @@ jobs:
     steps:
       - checkout
       - terraform/init:
-          path: ./terraform/k8s
+          path: ./terraform/docker
       - terraform/validate:
-          path: ./terraform/k8s
+          path: ./terraform/docker
       - terraform/fmt:
-          path: ./terraform/k8s
+          path: ./terraform/docker
       - terraform/plan:
-          path: ./terraform/k8s
+          path: ./terraform/docker
       - terraform/apply:
-          path: ./terraform/k8s
+          path: ./terraform/docker
       # - terraform/destroy:
       #     path: ./terraform/docker
     working_directory: ~/src
@@ -31,7 +31,10 @@ workflows:
   deploy-app:
     jobs:
       - deploy-app
-      - destroy-app:
+      - hold:
           type: approval 
           requires:
               - deploy-app
+      - destroy-app:
+          requires:
+              - hold
