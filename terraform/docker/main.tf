@@ -180,5 +180,6 @@ resource "aws_security_group" "service_security_group" {
 
 output "elb_dns_name" {
   description = "ELB DNS name"
-  value = resource.aws_alb.application_load_balancer.dns_name
+  value       = resource.aws_alb.application_load_balancer.dns_name
 }
+
