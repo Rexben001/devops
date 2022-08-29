@@ -16,25 +16,27 @@ jobs:
           path: ./terraform/docker
       - terraform/apply:
           path: ./terraform/docker
-      # - terraform/destroy:
-      #     path: ./terraform/docker
-    working_directory: ~/src
-
-  destroy-app:
-    executor: terraform/default
-    steps:
-      - checkout
+      - hold:
+         type: approval
       - terraform/destroy:
           path: ./terraform/docker
     working_directory: ~/src
+
+  # destroy-app:
+  #   executor: terraform/default
+  #   steps:
+  #     - checkout
+  #     - terraform/destroy:
+  #         path: ./terraform/docker
+  #   working_directory: ~/src
 workflows:
   deploy-app:
     jobs:
       - deploy-app
-      - hold:
-          type: approval 
-          requires:
-              - deploy-app
-      - destroy-app:
-          requires:
-              - hold
+      # - hold:
+      #     type: approval 
+      #     requires:
+      #         - deploy-app
+      # - destroy-app:
+      #     requires:
+      #         - hold
