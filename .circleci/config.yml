@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  aws-s3: circleci/aws-s3@1.0.11
 jobs:
     build:
       docker:
@@ -10,11 +8,10 @@ jobs:
         - checkout
         - run: cd client2 && npm install
         - run: cd client2 && npm run build
-  
-        - aws-s3/sync:
-            from: client2/build
-            to: "s3://s3-github-actions-rexben/"
-            arguments: |
-              --acl public-read \
-              --cache-control "max-age=86400"                
-            overwrite: true
+        - run: sudo apt-get update && sudo apt-get install -y python-dev
+        - run: sudo curl -O https://bootstrap.pypa.io/get-pip.py
+        - run: sudo python get-pip.py
+        - run: sudo pip install awscli --upgrade
+        - run: aws --version
+        - run: aws s3 ls
+        - run: aws s3 sync client2/build/ s3://s3-github-actions-rexben --delete
