@@ -60,3 +60,4 @@ yarn-error.log*
 
 
 /client2/node_modules
+/client2/build
