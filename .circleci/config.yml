@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+    aws-s3: circleci/aws-s3@3.0
 jobs:
     build:
       docker:
@@ -8,12 +10,23 @@ jobs:
         - checkout
         - run: cd client2 && npm install
         - run: cd client2 && npm run build
-        - run: sudo apt-get update && sudo apt-get install python3.7
-        - run: sudo curl -O https://bootstrap.pypa.io/get-pip.py
-        - run: sudo python3.7 get-pip.py
-        - run: sudo python3.7 -m pip install --upgrade pip setuptools wheel
-        - run: sudo python3.7 -m pip install pipenv
-        - run: sudo pip install awscli --upgrade
-        - run: aws --version
-        - run: aws s3 ls
-        - run: aws s3 sync client2/build/ s3://s3-github-actions-rexben --delete
+    deploy:
+      docker:
+      - image: 'cimg/python:3.6'
+      steps:
+        - checkout
+        - aws-s3/sync:
+            arguments: |
+              --acl public-read \
+              --cache-control "max-age=86400"
+            aws-access-key-id: AWS_ACCESS_KEY_ID
+            aws-region: AWS_REGION
+            aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+            from: client2/build
+            to: 's3://s3-github-actions-rexben/'
+
+workflows:
+  deploy-app:
+    jobs:
+      - build
+      - deploy
