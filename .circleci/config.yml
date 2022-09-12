@@ -4,17 +4,17 @@ orbs:
 jobs:
     build:
       docker:
-        - image: cimg/node:15.0.1-browsers
+        - image: cimg/python:3.10.6-node
       working_directory: ~/repo
       steps:
         - checkout
         - run: cd client2 && npm install
         - run: cd client2 && npm run build
-    deploy:
-      docker:
-      - image: 'cimg/python:3.6'
-      steps:
-        - checkout
+    # deploy:
+    #   docker:
+    #   - image: 'cimg/python:3.6'
+    #   steps:
+    #     - checkout
         - aws-s3/sync:
             arguments: |
               --acl public-read \
@@ -25,8 +25,8 @@ jobs:
             from: client2/build
             to: 's3://s3-github-actions-rexben/'
 
-workflows:
-  deploy-app:
-    jobs:
-      - build
-      - deploy
+# workflows:
+#   deploy-app:
+#     jobs:
+#       - build
+#       - deploy
