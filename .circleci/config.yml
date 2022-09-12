@@ -16,7 +16,7 @@ jobs:
               - v1-dependencies-{{ checksum "package.json" }}
               # fallback to using the latest cache if no exact match is found
               - v1-dependencies-
-        - run: cd cleint2 && npm install
+        - run: cd client2 && npm install
   
         - save_cache:
             paths:
@@ -25,10 +25,10 @@ jobs:
               - ~/.cache
             key: v1-dependencies-{{ checksum "package.json" }}
   
-        - run: cd cleint2 && npm run build
+        - run: cd client2 && npm run build
   
         - aws-s3/sync:
-            from: cleint2/build
+            from: client2/build
             to: "s3://s3-github-actions-rexben/"
             arguments: |
               --acl public-read \
