@@ -1,42 +1,36 @@
-version: '2.1'
+version: 2.1
 orbs:
-  terraform: circleci/terraform@3.1
+  aws-s3: circleci/aws-s3@1.0.11
 jobs:
-  deploy-app:
-    executor: terraform/default
-    steps:
-      - checkout
-      - terraform/init:
-          path: ./terraform/docker
-      - terraform/validate:
-          path: ./terraform/docker
-      - hold:
-         type: approval
-      - terraform/fmt:
-          path: ./terraform/docker
-      - terraform/plan:
-          path: ./terraform/docker
-      - terraform/apply:
-          path: ./terraform/docker
-      - terraform/destroy:
-          path: ./terraform/docker
-    working_directory: ~/src
-
-  # destroy-app:
-  #   executor: terraform/default
-  #   steps:
-  #     - checkout
-  #     - terraform/destroy:
-  #         path: ./terraform/docker
-  #   working_directory: ~/src
-workflows:
-  deploy-app:
-    jobs:
-      - deploy-app
-      # - hold:
-      #     type: approval 
-      #     requires:
-      #         - deploy-app
-      # - destroy-app:
-      #     requires:
-      #         - hold
+    build:
+      docker:
+        - image: circleci/node:12.9.1-browsers
+  
+      working_directory: ~/repo
+  
+      steps:
+        - checkout
+  
+        - restore_cache:
+            keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              # fallback to using the latest cache if no exact match is found
+              - v1-dependencies-
+        - run: cd cleint2 && npm install
+  
+        - save_cache:
+            paths:
+              - node_modules
+              - ~/.npm
+              - ~/.cache
+            key: v1-dependencies-{{ checksum "package.json" }}
+  
+        - run: cd cleint2 && npm run build
+  
+        - aws-s3/sync:
+            from: cleint2/build
+            to: "s3://s3-github-actions-rexben/"
+            arguments: |
+              --acl public-read \
+              --cache-control "max-age=86400"                
+            overwrite: true
