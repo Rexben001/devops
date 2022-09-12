@@ -8,9 +8,11 @@ jobs:
         - checkout
         - run: cd client2 && npm install
         - run: cd client2 && npm run build
-        - run: sudo apt-get update && sudo apt-get install -y python-dev
+        - run: sudo apt-get update && sudo apt-get install python3.7
         - run: sudo curl -O https://bootstrap.pypa.io/get-pip.py
-        - run: sudo python get-pip.py
+        - run: sudo python3.7 get-pip.py
+        - run: sudo python3.7 -m pip install --upgrade pip setuptools wheel
+        - run: sudo python3.7 -m pip install pipenv
         - run: sudo pip install awscli --upgrade
         - run: aws --version
         - run: aws s3 ls
